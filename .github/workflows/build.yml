@@ -1,0 +1,41 @@
+name: Build Flutter APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          channel: 'stable'
+
+      - name: Verify Flutter
+        run: flutter doctor -v
+
+      - name: Recreate Flutter project structure (if needed)
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create .
+          fi
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rajak-Dhobi-Samaj-App
+          path: build/app/outputs/flutter-apk/app-release.apk
